@@ -1,3 +1,5 @@
+from time import sleep
+
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -71,6 +73,8 @@ labelToText = {
 cap = cv2.VideoCapture(0)
 
 while(True):
+    #sleep(0.5)
+
     _, frame = cap.read()
     redness = returnRedness(frame)
     thresh = threshold(redness)    
