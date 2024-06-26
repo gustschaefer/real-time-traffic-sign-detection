@@ -79,21 +79,21 @@ while(True):
     redness = returnRedness(frame)
     thresh = threshold(redness)    
     
-    #try:
-    contours = findContour(thresh)
-    big = findBiggestContour(contours)
-    if cv2.contourArea(big) > 3000:
-        print(cv2.contourArea(big))
-        img, sign = boundaryBox(frame, big)
-        cv2.imshow('frame', img)
-        cv2.imshow('sign', sign)
-        result = labelToText[predict4(sign)]
+    try:
+        contours = findContour(thresh)
+        big = findBiggestContour(contours)
+        if cv2.contourArea(big) > 3000:
+            print(cv2.contourArea(big))
+            img, sign = boundaryBox(frame, big)
+            cv2.imshow('frame', img)
+            cv2.imshow('sign', sign)
+            result = labelToText[predict4(sign)]
 
-        print(result)
-    else:
+            print(result)
+        else:
+            cv2.imshow('frame', frame)
+    except:
         cv2.imshow('frame', frame)
-    #except:
-    #    cv2.imshow('frame', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
