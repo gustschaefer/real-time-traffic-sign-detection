@@ -1,12 +1,12 @@
-ClassId,SignName
-0,Speed limit (30km/h)
-1,Stop
-2,No entry
-3,Road work
-4,Pedestrians
-5,Children crossing
-6,Bicycles crossing
-7,Wild animals crossing
-8,Ahead only
-9,Keep right
-10,Keep left
+ClassId, SignName, Pasta, 
+0, Speed limit (30km/h), 0 -> 210 imagens
+1, Stop, 14 -> 780 imagens
+2, No entry, 17 -> 1110 imagens
+3, Road work, 25 -> 1500 imagens
+4, Pedestrians, 27 -> 240  imagens
+5, Children crossing, 28 -> 540 imagens
+6, Bicycles crossing, 29 -> 270 imagens
+7, Wild animals crossing, 31 -> 780 imagens
+8, Ahead only, 35 -> 1200 imagens
+9, Keep right, 38 -> 2070 imagens
+10, Keep left, 39 -> 300 imagens

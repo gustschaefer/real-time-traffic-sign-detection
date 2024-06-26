@@ -1,4 +1,6 @@
 # import the necessary packages
+import tensorflow as tf
+from tensorflow import keras
 from tensorflow.keras.layers import (
     Activation,
     BatchNormalization,
@@ -64,4 +66,20 @@ class TrafficSignNet:
 		model.add(Activation("softmax"))
 
 		# return the constructed network architecture
+		return model
+	
+	@staticmethod
+	def build2(width, height, depth, classes):
+		# initialize the model along with the input shape to be
+		# "channels last" and the channels dimension itself
+		inputShape = (height, width, depth)
+		chanDim = -1
+
+		model = keras.Sequential([
+			keras.layers.Conv2D(filters=8,kernel_size=(3,3),activation='relu',input_shape=inputShape),
+			keras.layers.MaxPool2D(pool_size=(4,4)),
+			keras.layers.Flatten(),
+			keras.layers.Dense(classes,tf.nn.softmax)
+		])
+
 		return model
