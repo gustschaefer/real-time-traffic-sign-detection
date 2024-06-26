@@ -1,0 +1,98 @@
+import cv2
+import numpy as np
+import tensorflow as tf
+
+# Load the TFLite model and allocate tensors.
+interpreter = tf.lite.Interpreter(model_path='./model/trafficsignnet_light.tflite')
+interpreter.allocate_tensors()
+
+# Get input and output tensors.
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
+def returnRedness(img):
+    yuv = cv2.cvtColor(img, cv2.COLOR_BGR2YUV)
+    y, u, v = cv2.split(yuv)
+    return v
+
+def threshold(img, T=150):
+    _, img = cv2.threshold(img, T, 255, cv2.THRESH_BINARY)
+    return img 
+
+def findContour(img):
+    contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    return contours
+
+def findBiggestContour(contours):
+    m = 0
+    c = [cv2.contourArea(i) for i in contours]
+    return contours[c.index(max(c))]
+
+def boundaryBox(img, contours):
+    x, y, w, h = cv2.boundingRect(contours)
+    img = cv2.rectangle(img, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    sign = img[y:(y+h), x:(x+w)]
+    return img, sign
+
+def preprocessingImageToClassifier(image=None, imageSize=28, mu=89.77428691773054, std=70.85156431910688):
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    image = cv2.resize(image, (imageSize, imageSize))
+    image = np.expand_dims(image, axis=-1)
+    image = (image - mu) / std
+    image = image.reshape(1, imageSize, imageSize, 1)
+    return image.astype(np.float32)
+
+def predict4(sign):
+    img = preprocessingImageToClassifier(sign, imageSize=28)
+    # Set the tensor to point to the input data to be inferred
+    interpreter.set_tensor(input_details[0]['index'], img)
+    # Run the inference
+    interpreter.invoke()
+    # Get the output tensor
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    return np.argmax(output_data)
+
+labelToText = {
+    0: "Limite de Velocidade (30km/h)",
+    1: "Pare",
+    2: "Não entre",
+    3: "Estrada em obras",
+    4: "Pedestres",
+    5: "Crianças",
+    6: "Bicicletas",
+    7: "Animais selvagens",
+    8: "Siga em frente",
+    9: "Mantenha a direita",
+    10: "Mantenha a esquerda"
+}
+
+#--------------------------------------------------------------------------
+
+cap = cv2.VideoCapture(0)
+
+while(True):
+    _, frame = cap.read()
+    redness = returnRedness(frame)
+    thresh = threshold(redness)    
+    
+    #try:
+    contours = findContour(thresh)
+    big = findBiggestContour(contours)
+    if cv2.contourArea(big) > 3000:
+        print(cv2.contourArea(big))
+        img, sign = boundaryBox(frame, big)
+        cv2.imshow('frame', img)
+        cv2.imshow('sign', sign)
+        result = labelToText[predict4(sign)]
+
+        print(result)
+    else:
+        cv2.imshow('frame', frame)
+    #except:
+    #    cv2.imshow('frame', frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()

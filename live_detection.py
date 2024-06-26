@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-model = keras.models.load_model('./model/trafficsignnet.model')
+model = keras.models.load_model('./model/trafficsignnet_light.tflite')
 
 
 def returnRedness(img):
