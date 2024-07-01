@@ -1,9 +1,11 @@
+from time import sleep
+
 import cv2
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 
-model = keras.models.load_model('./model/trafficsignnet_light.tflite')
+model = keras.models.load_model('./model/trafficsignnet_light.model')
 
 
 def returnRedness(img):
@@ -63,7 +65,8 @@ cap=cv2.VideoCapture(0)
 while(True):
 	_, frame = cap.read()
 	redness = returnRedness(frame)
-	thresh = threshold(redness) 	
+	thresh = threshold(redness) 
+	sleep(0.2)	
 	
 	try:
 		contours = findContour(thresh)
